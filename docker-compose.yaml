@@ -1,0 +1,43 @@
+services:
+  expense-service:
+    container_name: expense-service
+    image: karthikdasari05/expense-service:latest
+    # build:
+    #   context: ./expense-service
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    depends_on:
+      - mysql
+
+  expense-tracker-web:
+    container_name: ui
+    image: karthikdasari05/expense-tracker-expense-tracker-web:latest
+    # build: 
+    #   context: ./expense-tracker-web
+    ports:
+      - 3000:80
+    depends_on:
+      - mysql
+      - expense-service
+
+  mysql:
+    image: mysql:8.0
+    container_name: expense-records
+    ports:
+      - 3307:3306
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${DATABASE_USERNAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+
+volumes:
+  mysql_data:
